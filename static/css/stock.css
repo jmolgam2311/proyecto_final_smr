@@ -1,0 +1,309 @@
+/* =========================================
+   1. RESET Y ESTRUCTURA BASE (ZERO-SCROLL)
+   ========================================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    width: 100vw;      
+    height: 100vh;     
+    overflow: hidden; 
+    background-color: #1a1d23;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* =========================================
+   2. BARRA LATERAL (HEADER_LEFT)
+   ========================================= */
+.header_left {
+    height: 100vh;
+    width: 260px; 
+    background-color: #1a1d23; 
+    border-right: 1px solid #2d313a;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.cab {
+    display: flex;
+    align-items: center;
+    padding: 30px 20px;
+}
+
+.log {
+    height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nombre {
+    color: #91da32;
+    font-weight: 800;
+    font-size: 1.2rem;
+    letter-spacing: -0.5px;
+    margin-left: 12px;
+}
+
+/* --- MENÚ DE NAVEGACIÓN --- */
+.menu {
+    padding: 10px;
+    flex-grow: 1;
+}
+
+.dash1 {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    margin-bottom: 6px;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.dash1:hover {
+    background-color: rgba(145, 218, 50, 0.08);
+}
+
+/* Iconos con filtro para uniformidad */
+.dash, .stock, .ped, .prov, .litics {
+    height: 22px;
+    width: 22px;
+    filter: brightness(0) invert(0.8); /* Gris claro por defecto */
+    transition: 0.3s;
+}
+
+.dash1:hover .dash, .dash1:hover .stock, 
+.dash1:hover .ped, .dash1:hover .prov, 
+.dash1:hover .litics {
+    filter: brightness(0) invert(1) drop-shadow(0 0 5px #91da32);
+}
+
+.btn {
+    text-decoration: none;
+    color: #9ca3af;
+    font-size: 0.95rem;
+    margin-left: 12px;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.dash1:hover .btn {
+    color: #ffffff;
+}
+
+/* --- SECCIÓN USUARIO Y LOGOUT --- */
+.us {
+    margin-top: auto; 
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #16191f;
+    border-top: 1px solid #2d313a;
+}
+
+.user {
+    text-decoration: none;
+    color: #ef4444; /* Rojo suave para el logout */
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: 0.3s;
+}
+
+.user:hover {
+    color: #ff8080;
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+}
+
+/* =========================================
+   3. ÁREA DE CONTENIDO (FEED)
+   ========================================= */
+.feed {
+    flex: 1;
+    background-color: #282C35;
+    display: flex;
+    flex-direction: column;
+    padding: 40px;
+    height: 100vh;
+}
+
+.top {
+    margin-bottom: 30px;
+    flex-shrink: 0;
+}
+
+.title {
+    color: #ffffff;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.sub {
+    color: #747882;
+    font-size: 1rem;
+    margin-top: 5px;
+}
+
+/* --- FILTROS Y DESPLEGABLES --- */
+.tp {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-shrink: 0;
+}
+
+.prove {
+    color: #91da32;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1.2px;
+    margin-right: 15px;
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropbtn {
+    background-color: #1e222b;
+    color: #ffffff;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    border: 1px solid #374151;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+    min-width: 180px;
+    text-align: left;
+}
+
+.dropbtn:hover {
+    border-color: #91da32;
+    background-color: #252a35;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #1e222b;
+    min-width: 220px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    z-index: 100;
+    border-radius: 8px;
+    border: 1px solid #374151;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.dropdown-content a {
+    color: #9ca3af;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    font-size: 0.9rem;
+    transition: 0.2s;
+}
+
+.dropdown-content a:hover {
+    background-color: #2d313a;
+    color: #91da32;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* =========================================
+   4. TABLA DE PRODUCTOS (SCROLL INTERNO)
+   ========================================= */
+.tbl {
+    flex: 1;
+    background-color: #1e222b;
+    border: 1px solid #32353e;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden; /* Corta el contenido para respetar el border-radius */
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+
+    max-height: 420px;      /* Ajusta este valor según cuánto quieras que ocupe */
+    overflow-y: auto;       /* Solo scroll vertical cuando haga falta */
+    overflow-x: hidden;
+}
+
+.tabla-stock {
+    width: 100%;
+    height: 60%;
+    border-collapse: collapse;
+    table-layout: fixed; /* Mantiene las columnas estables */
+}
+.produ{
+    color:#91da32;
+}
+.tabla-stock thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #16191f;
+}
+
+.tabla-stock th {
+    padding: 20px;
+    color: #91da32;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-align: left;
+    border-bottom: 2px solid #2d313a;
+}
+
+.tabla-stock td {
+    padding: 16px 20px;
+    border-bottom: 1px solid #2d313a;
+    color: #d1d5db;
+    font-size: 0.9rem;
+}
+
+.tabla-stock tbody tr:hover {
+    background-color: rgba(145, 218, 50, 0.03);
+}
+
+/* --- INDICADORES DINÁMICOS --- */
+.stock-bajo {
+    color: #ff4d4d;
+    font-weight: 700;
+    background: rgba(255, 77, 77, 0.15);
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 77, 77, 0.2);
+    display: inline-block;
+}
+
+/* Custom Scrollbar para la tabla */
+.tbl::-webkit-scrollbar {
+    width: 8px;
+}
+.tbl::-webkit-scrollbar-track {
+    background: #1e222b;
+}
+.tbl::-webkit-scrollbar-thumb {
+    background: #374151;
+    border-radius: 10px;
+}
+.tbl::-webkit-scrollbar-thumb:hover {
+    background: #91da32;
+}

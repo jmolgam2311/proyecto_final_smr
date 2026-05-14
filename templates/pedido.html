@@ -1,0 +1,199 @@
+{% extends "test_layout.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Barcode+39&display=swap">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/form1.css') }}">
+
+<style>
+    /* Forzamos que la clase visual use la fuente de barras */
+    .barcode-visual {
+        font-family: 'Libre Barcode 39', cursive;
+        font-size: 50px;
+        color: black;
+        background: white;
+        padding: 10px;
+        display: inline-block;
+        line-height: 1;
+    }
+    
+    /* Ajuste para que el contenido no quede pegado a los bordes */
+    .modulo-ventas {
+        padding: 20px;
+        box-sizing: border-box;
+    }
+</style>
+
+<div class="modulo-ventas">
+    <div class="card-ventas">
+        <h2 class="title">Generar Pedido de Compra</h2>
+        
+        <div class="formulario-operativo">
+            <div class="grupo-input">
+                <label>Producto / ID</label>
+                <input type="text" id="id-prod" list="lista-productos" placeholder="Escribe o selecciona...">
+                <datalist id="lista-productos">
+                    {% for p in productos %}
+                        <option value="{{ p.id }}">{{ p.nombre }}</option>
+                    {% endfor %}
+                </datalist>
+            </div>
+            
+            <div class="grupo-input">
+                <label>Cantidad</label>
+                <input type="number" id="cant-prod" placeholder="0">
+            </div>
+
+            <button class="btn-añadir" onclick="agregarAlTicket()">
+                <span>+</span> Añadir
+            </button>
+        </div>
+    </div>
+
+    <div class="card-previsualizacion">
+        <div class="hoja-pdf" id="vale-imprimir">
+            <div class="hoja-header">
+                <h3>VALE DE PEDIDO</h3>
+                <p id="fecha-vale">{{ fecha_actual }}</p>
+                <p class="codigo-vale">REF: <span id="id-unico-vale">{{ sugerencia_id }}</span></p>
+                <div class="barcode-visual">*{{ sugerencia_id }}*</div>
+            </div>
+            <hr>
+            <table class="tabla-vale">
+                <thead>
+                    <tr>
+                        <th>Cant.</th>
+                        <th>Descripción</th>
+                        <th>ID</th>
+                        <th class="no-print">Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-items-vale">
+                    </tbody>
+            </table>
+        </div>
+
+        <div class="acciones-finales" style="display: flex; gap: 10px; margin-top: 20px;">
+            <button class="btn-cancelar" onclick="cancelarOperacion()" style="flex: 1; padding: 12px; background: #32363F; color: #ff4d4d; border: 1px solid #ff4d4d; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                Cancelar
+            </button>
+            <button class="btn-validar" onclick="enviarPedidoAlServidor()" style="flex: 2; padding: 12px; background: #91da32; color: #1a1d23; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                Validar y Generar PDF
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+let productosEnTicket = [];
+
+function agregarAlTicket() {
+    const inputProd = document.getElementById('id-prod');
+    const inputCant = document.getElementById('cant-prod');
+    
+    const idIngresado = inputProd.value.trim();
+    const cantidad = parseInt(inputCant.value);
+
+    if (idIngresado === "" || isNaN(cantidad) || cantidad <= 0) {
+        alert("Introduce un ID válido y cantidad positiva.");
+        return;
+    }
+
+    const datalist = document.getElementById('lista-productos');
+    let nombreEncontrado = idIngresado; 
+    let idReal = idIngresado;
+
+    if (datalist) {
+        const opcion = Array.from(datalist.options).find(opt => opt.value === idIngresado);
+        if (opcion) {
+            nombreEncontrado = opcion.textContent;
+            idReal = opcion.value; 
+        }
+    }
+
+    productosEnTicket.push({
+        cantidad: cantidad,
+        nombre: nombreEncontrado,
+        id: idReal
+    });
+
+    renderizarTabla();
+    inputProd.value = "";
+    inputCant.value = "";
+    inputProd.focus();
+}
+
+function renderizarTabla() {
+    const cuerpo = document.getElementById('lista-items-vale');
+    cuerpo.innerHTML = ""; 
+
+    productosEnTicket.forEach((item, index) => {
+        const fila = `
+            <tr>
+                <td>${item.cantidad}</td>
+                <td>${item.nombre}</td>
+                <td>${item.id}</td>
+                <td class="no-print">
+                    <button type="button" onclick="eliminarFila(${index})" style="background:none; border:none; cursor:pointer; font-size:1.2rem;">❌</button>
+                </td>
+            </tr>
+        `;
+        cuerpo.innerHTML += fila;
+    });
+}
+
+function eliminarFila(index) {
+    productosEnTicket.splice(index, 1);
+    renderizarTabla();
+}
+
+function cancelarOperacion() {
+    if (productosEnTicket.length === 0) {
+        window.location.href = "{{ url_for('dashboard') }}";
+        return;
+    }
+    
+    if (confirm("¿Deseas cancelar el pedido actual y borrar los datos?")) {
+        productosEnTicket = [];
+        renderizarTabla();
+        document.getElementById('id-prod').value = "";
+        document.getElementById('cant-prod').value = "";
+    }
+}
+
+async function enviarPedidoAlServidor() {
+    if (productosEnTicket.length === 0) {
+        alert("El vale está vacío. Añade productos primero.");
+        return;
+    }
+
+    const idVale = document.getElementById('id-unico-vale').innerText;
+    const fechaVale = document.getElementById('fecha-vale').innerText;
+
+    const datos = {
+        id_vale: idVale,
+        fecha: fechaVale,
+        items: productosEnTicket
+    };
+
+    try {
+        const response = await fetch('/guardar_pedido', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos)
+        });
+
+        const resultado = await response.json();
+
+        if (response.ok) {
+            alert("¡Pedido guardado con éxito!");
+            window.print();
+            location.reload();
+        } else {
+            alert("ERROR: " + (resultado.message || "Error al procesar el pedido"));
+        }
+    } catch (error) {
+        alert("Error de conexión: " + error);
+    }
+}
+</script>
+{% endblock %}

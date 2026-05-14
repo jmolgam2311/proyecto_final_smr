@@ -1,0 +1,224 @@
+/*CUERPO DE LA INTERFAZ*/
+
+.body-fabrica { 
+    background-color: #0f172a; 
+    padding: 20px; 
+}
+
+.contenedor-fabrica { 
+    max-width: 900px; 
+    margin: 0 auto; 
+}
+
+/*CABECERA*/
+.header-operativo { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 20px; 
+    margin-bottom: 30px; 
+}
+/*DIV DEL MODO*/
+.selectores-modo { display: grid;
+    grid-template-columns: 1fr 1fr; 
+    gap: 15px; 
+}
+/*BOTONES MODO*/
+.btn-modo {
+    padding: 25px;
+    font-size: 18px;
+    font-weight: bold;
+    border: 2px solid #334155;
+    background: #1e293b;
+    color: #94a3b8;
+    cursor: pointer;
+    border-radius: 12px;
+}
+/*BOTON SELECCIONADO*/
+.btn-modo.active { 
+    border-color: #a3e635; 
+    color: #a3e635; 
+    background: rgba(163, 230, 53, 0.1); 
+}
+
+/* CAJA DE ESCANEO */
+.caja-input-barras {
+    background: #1e293b;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+#lector-barras {
+    width: 100%;
+    margin-top: 15px;
+    padding: 20px;
+    font-size: 24px;
+    background: #0f172a;
+    border: 2px solid #a3e635;
+    color: white;
+    text-align: center;
+    border-radius: 8px;
+    width: 90%;
+}
+
+/* PANEL VERIFICACIÓN */
+.panel-verificacion {
+    margin-top: 20px;
+    background: #1e293b;
+    padding: 30px;
+    border-radius: 12px;
+    border-left: 10px solid #a3e635;
+}
+
+.input-confirmar {
+    padding: 15px;
+    font-size: 20px;
+    width: 150px;
+    background: #0f172a;
+    color: #a3e635;
+    border: 1px solid #334155;
+}
+
+#txt-incidencia {
+    width: 97%;
+    height: 80px;
+    margin-top: 10px;
+    background: #0f172a;
+    color: #f87171; /* Rojo suave para incidencias */
+    border: 1px solid #334155;
+    padding: 10px;
+}
+
+.btn-validar {
+    background: #a3e635;
+    color: #0f172a;
+    padding: 20px 40px;
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+}
+.contenedor-incidencias {
+    margin-top: 20px;
+    border: 1px dashed #475569;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.btn-toggle-incidencia {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 1px solid #f87171;
+    color: #f87171;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: 0.3s;
+}
+
+.btn-toggle-incidencia.activo {
+    background: #f87171;
+    color: #0f172a;
+}
+
+.incidencia-desplegable {
+    display: none; /* Oculto por defecto */
+    margin-top: 15px;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.opciones-rapidas {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.opciones-rapidas span {
+    font-size: 12px;
+    background: #334155;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #cbd5e1;
+}
+
+.opciones-rapidas span:hover { background: #475569; }
+.btn-cancelar-op {
+    background: transparent; /* Fondo transparente para no competir con el botón principal */
+    color: #94a3b8; /* Gris azulado neutro */
+    border: 1px solid #334151;
+    padding: 15px 30px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-cancelar-op:hover {
+    background: rgba(248, 113, 113, 0.1); /* Fondo rojo muy suave al pasar el ratón */
+    color: #f87171; /* El texto cambia a rojo alerta */
+    border-color: #f87171; /* El borde se ilumina en rojo */
+    box-shadow: 0 0 15px rgba(248, 113, 113, 0.2); /* Resplandor suave */
+}
+
+/* Contenedor de acciones para alinearlos bien */
+.acciones-finales {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+    align-items: center;
+}
+
+.btn-validar {
+    flex: 2; /* El botón de confirmar es más ancho */
+}
+
+.btn-cancelar-op {
+    flex: 1; /* El botón de anular es más estrecho */
+}
+label{
+    color:white;
+}
+span{
+    color:white;
+}
+.info-producto-escaneado{
+    color: white;
+}
+.header-operativo {
+    display: flex;
+    justify-content: space-between; /* Alinea info a la izquierda, botones centro, logout derecha */
+    align-items: center;
+    padding: 15px 25px;
+    background-color: #2c3e50;
+    color: white;
+}
+
+.btn-salir-operativo img {
+    width: 35px; /* Tamaño adecuado para interfaz táctil/fábrica */
+    height: auto;
+    transition: transform 0.2s;
+}
+
+.btn-salir-operativo:hover img {
+    transform: scale(1.1);
+}
+
+.logout-container {
+    margin-left: 20px;
+}
+.small{
+    color: white;
+}

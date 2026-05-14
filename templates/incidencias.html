@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Incidencias - Stock & Roll</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/incidencias.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+<div class="header_left">
+        <div class="cab">
+            <div class="log">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo Stock & Roll">
+            </div>
+            <div class="nombre">Stock & Roll</div>
+        </div>
+        <div class="menu">
+            <div class="dash1">
+                <div class="dash"></div>
+                <a href="{{ url_for('dashboard') }}" class="btn">Dashboard</a>
+            </div>
+            <div class="dash1">
+                <div class="stock"></div>
+                <a href="{{ url_for('stock') }}" class="btn">Stock</a>
+            </div>
+            <div class="dash1">
+                <div class="ped"></div>
+                <a href="{{ url_for('pedido') }}" class="btn">Pedidos</a>
+            </div>
+            <div class="dash1">
+                <div class="prov"></div>
+                <a href="{{ url_for('proveedores') }}" class="btn">Proveedores</a>
+            </div>
+            <div class="dash1">
+                <div class="litics"></div>
+                <a href="#" class="btn">Analítica</a>
+            </div>
+            <div class="us" style="display: flex; align-items: center;">
+                <div class="log">
+                    <img src="{{ url_for('static', filename='img/user.png') }}" alt="User" width="30" style="border-radius: 5px; margin-right: 8px;">
+                </div>
+                <a href="#" class="btn" style="color: #89c534; text-decoration: none; font-weight: bold;">ventas.01</a>
+                <a href="{{ url_for('logout') }}" title="Cerrar Sesión" style="margin-left: 15px; display: flex; align-items: center;">
+                    <img class="logout" src="{{ url_for('static', filename='img/logout.png') }}" width="35" title="Salir">
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="feed">
+        <div class="header-section">
+            <h1><i class="fas fa-clipboard-list"></i> Gestión de Incidencias</h1>
+            <span class="badge-count">{{ n_incidencias }} Pendientes</span>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Vale</th>
+                        <th>Descripción de la Incidencia</th>
+                        <th>Reportado el</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if lista_incidencias %}
+                        {% for inc in lista_incidencias %}
+                        <tr>
+                            <td><span class="vale-id">#{{ inc.codigo_vale }}</span></td>
+                            <td class="desc-text">{{ inc.descripcion }}</td>
+                            <td class="fecha">{{ inc.fecha }}</td>
+                            <td>
+                                <form action="{{ url_for('resolver_incidencia', id=inc.id) }}" method="POST">
+                                    <button type="submit" class="btn-check">
+                                        <i class="fas fa-check"></i> Resolver
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4">
+                                <div class="empty-state">
+                                    <i class="fas fa-mug-hot"></i>
+                                    <p>¡Todo en orden! No hay incidencias pendientes.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>

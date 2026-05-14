@@ -1,0 +1,188 @@
+body {
+    display: flex;
+    margin: 0;         
+    padding: 0;
+    width: 100vw;      
+    overflow-x: hidden; 
+}
+.header_left {
+    height: 100vh;
+    width: 250px;
+    background-color: #1a1d23;
+    border-right: 1px solid #2d313a;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+}
+/* --- CABECERA LOGO --- */
+.cab {
+    display: flex;
+    align-items: center;
+    padding: 20px 15px;
+    background-color: #1a1d23;
+}
+
+.log {
+    height: 35px;
+    width: 35px;
+    background-color: transparent; 
+    flex-shrink: 0;
+}
+
+.log img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.nombre {
+    color: #91da32;
+    font-weight: bold;
+    font-size: 1.1rem;
+    align-self: center;
+    margin-left: 10px;
+}
+
+/* --- CUERPO DEL MENÚ --- */
+.menu {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 70px);
+    padding: 10px;
+    background-color: #1a1d23;
+}
+
+/* Bloques de opciones */
+.dash1 {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    margin-bottom: 5px;
+    border-radius: 8px;
+    transition: background 0.3s ease;
+}
+
+.dash1:hover {
+    background-color: #2d313a; 
+}
+
+/* Iconos */
+.dash, .stock, .ped, .prov, .litics {
+    height: 24px;
+    width: 24px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: brightness(0) invert(1); 
+}
+
+/* Texto de los botones */
+.btn {
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 0.95rem;
+    margin-left: 15px;
+    margin-right: 0; 
+    flex-grow: 1;
+}
+
+/* --- SECCIÓN USUARIO / LOGOUT --- */
+.us {
+    margin-top: auto; 
+    padding: 20px 15px;
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #2d313a;
+}
+
+.user {
+    text-decoration: none;
+    color: #ff4d4d; 
+    font-weight: bold;
+    margin-left: 15px;
+    margin-right: 0;
+    margin-top: 0; 
+}
+/* --- PANEL DE INCIDENCIAS --- */
+.feed {
+    flex-grow: 1; 
+    padding: 40px 0; 
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    background-color: #282C35;
+    height: 100vh;
+    overflow-y: auto;
+    color: white;
+}
+
+
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%; 
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: thin solid #747882;
+}
+
+.header-section h1 {
+    margin: 0;
+    font-size: 1.8rem;
+}
+
+/* --- TABLA --- */
+.table-container {
+    background-color: #1f222a;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    width: 90%;
+    margin-bottom: 40px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background-color: #16191f;
+    color: #91da32;
+    padding: 18px 20px;
+    text-align: left;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+td {
+    padding: 18px 20px;
+    border-bottom: 1px solid #32353e;
+    color: #ffffff;
+    font-size: 0.95rem;
+}
+
+tr:hover {
+    background-color: #252932;
+}
+
+/* Estilo del botón de acción */
+.btn-check {
+    background-color: transparent;
+    border: 2px solid #91da32;
+    color: #91da32;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn-check:hover {
+    background-color: #91da32;
+    color: #1a1d23;
+}

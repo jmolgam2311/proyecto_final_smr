@@ -1,0 +1,105 @@
+{% extends "test_layout.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Barcode+39&display=swap">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/proveedores1.css') }}">
+
+<div class="main-container" style="padding: 30px; box-sizing: border-box;">
+    
+    <header class="header-pagina">
+        <h2 class="title">Directorio de Proveedores</h2>
+        <button class="btn-nuevo" onclick="abrirModalNuevo()">+ Nuevo Proveedor</button>
+    </header>
+
+    <section class="card-tabla">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Proveedor</th>
+                    <th>Categoría</th>
+                    <th>Contacto</th>
+                    <th style="text-align: center;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for prov in proveedores %}
+                <tr>
+                    <td>{{ prov.id }}</td>
+                    <td>{{ prov.nombre }}</td>
+                    <td>{{ prov.categoria }}</td> 
+                    <td>{{ prov.contacto }}</td> 
+                    <td style="text-align: center;">
+                        <button class="btn-editar" 
+                                onclick="editarProveedor('{{ prov.id }}', '{{ prov.nombre }}', '{{ prov.categoria }}', '{{ prov.contacto }}')">
+                            Editar
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</div>
+
+<div id="miModal" class="modal-overlay">
+    <div class="modal-caja">
+        <div class="modal-header">
+            <h3 id="modal-titulo">Editar Proveedor</h3>
+            <span class="cerrar-modal" onclick="cerrarModal()">&times;</span>
+        </div>
+        <form id="form-proveedor" class="modal-body" action="/actualizar_proveedor" method="POST">
+            <div class="campo">
+                <label>ID Proveedor</label>
+                <input type="text" id="in-id" name="id" required placeholder="Introduce el ID">
+            </div>
+            <div class="campo">
+                <label>Nombre de la Empresa</label>
+                <input type="text" id="in-nombre" name="nombre">
+            </div>
+            <div class="campo">
+                <label>Categoría</label>
+                <input type="text" id="in-cat" name="categoria">
+            </div>
+            <div class="campo">
+                <label>Contacto</label>
+                <input type="text" id="in-tel" name="contacto">
+            </div>
+            <button type="submit" class="btn-guardar">Confirmar Datos</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const modal = document.getElementById("miModal");
+    const form = document.getElementById("form-proveedor");
+
+    function abrirModalNuevo() {
+        document.getElementById("modal-titulo").innerText = "Nuevo Proveedor";
+        form.reset();
+        form.action = "/nuevo_proveedor"; // Ajusta esta ruta según tu app.py
+        modal.style.display = "flex";
+    }
+
+    function editarProveedor(id, nombre, categoria, contacto) {
+        document.getElementById('modal-titulo').innerText = "Editar Proveedor";
+        form.action = "/actualizar_proveedor";
+        
+        document.getElementById('in-id').value = id;
+        document.getElementById('in-nombre').value = nombre;
+        document.getElementById('in-cat').value = categoria;
+        document.getElementById('in-tel').value = contacto;
+        
+        modal.style.display = 'flex';
+    }
+
+    function cerrarModal() {
+        modal.style.display = "none";
+    }
+
+    // Cerrar si se hace clic fuera de la caja
+    window.onclick = function(event) {
+        if (event.target == modal) cerrarModal();
+    }
+</script>
+{% endblock %}

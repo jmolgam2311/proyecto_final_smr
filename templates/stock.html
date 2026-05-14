@@ -1,0 +1,57 @@
+{% extends "test_layout.html" %}
+
+{% block content %} <link rel="stylesheet" href="{{ url_for('static', filename='css/stock.css') }}">
+
+<div class="top">
+    <div class="lft">
+        <h2 class="title">Stock</h2>
+        <h3 class="sub">Control del stock</h3>
+    </div>
+</div>
+
+<div class="mid">
+    <div class="tp">
+        <h2 class="prove">Proveedores</h2>
+        <div class="dropdown">
+            <button class="dropbtn">Filtrar por Proveedor ▼</button>
+            <div class="dropdown-content">
+                <a href="/inventario">Mostrar Todos</a>
+                {% for prov in proveedores %}
+                <a href="/inventario?proveedor_id={{ prov['id'] }}">
+                    {{ prov['nombre'] }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <h2 class="produ">Productos</h2>
+    <div class="tbl">
+        <table class="tabla-stock">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Producto</th>
+                    <th>Stock Actual</th>
+                    <th>Mínimo</th>
+                    <th>Proveedor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in productos %}
+                <tr>
+                    <td>{{ p['id'] }}</td>
+                    <td>{{ p['nombre'] }}</td>
+                    <td class="{{ 'stock-bajo' if p['stock_actual'] <= p['stock_minimo'] else '' }}">
+                        {{ p['stock_actual'] }}
+                    </td> 
+                    <td>{{ p['stock_minimo'] }}</td>
+                    <td>{{ p['nombre_proveedor'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

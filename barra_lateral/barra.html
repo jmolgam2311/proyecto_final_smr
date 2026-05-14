@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Stock</title>
+        <link rel="stylesheet" href="barra.css">
+    </head>
+    <body>
+        <div class="header_left">
+            <div class="cab">
+                <div class="log"></div>
+                <div class="nombre">Stock & Roll</div>
+            </div>
+            <div class="menu">
+                <div class="dash1">
+                    <div class="dash"></div>
+                    <a href=".html" class="btn">Dashboard</a>
+                </div>
+                <div class="dash1">
+                    <div class="stock"></div>
+                    <a href=".html" class="btn">Stock</a>
+                </div>
+                <div class="dash1">
+                    <div class="ped"></div>
+                    <a href=".html" class="btn">Pedidos</a>
+                </div>
+                <div class="dash1">
+                    <div class="prov"></div>
+                    <a href=".html" class="btn">Proveedores</a>
+                </div>
+                <div class="dash1">
+                    <div class="litics"></div>
+                    <a href=".html" class="btn">Analítica</a>
+                </div>
+                <div class="us">
+                    <div class="log"></div>
+                    <a href=".html" class="btn">Usuario</a>
+                    <div class="log">
+                        <a href="{{ url_for('logout') }}" class="btn-logout-img" title="Cerrar Sesión">
+                            <img src="{{ url_for('static', filename='img/logout-icon.png') }}">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>

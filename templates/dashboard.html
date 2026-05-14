@@ -1,0 +1,128 @@
+{% extends "test_layout.html" %}
+
+{% block content %} <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<div class="feed">
+    <div class="top">
+        <div class="lft">
+            <h2 class="title">Dashboard</h2>
+            <h3 class="sub">Un resumen de la actividad</h3>
+        </div>
+        <div class="rgt1">
+            <div class="prod" onclick="abrirModalProducto()" style="cursor: pointer;">
+                <h2 class="pr">Añadir Producto</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="mid">
+        <div class="lft">
+            <div class="lbl">
+                <h2 class="lbl1">Productos en Stock</h2>
+                <h1 class="lbl1">{{ n_stock }}</h1>
+                <p class="lbl1">Variedad total</p>
+            </div>
+        </div>
+        <div class="rgt">
+            <div class="lbl {{ 'alerta-roja-stock' if n_alertas > 0 else '' }}">
+                <h2 class="lbl1">Alerta de Stock</h2>
+                <h1 class="lbl1 {{ 'alerta-roja' if n_alertas > 0 else 'alerta-ok' }}">{{ n_alertas }}</h1>
+                <p class="lbl1">Requieren atención</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="mid">
+        <div class="lft">
+            <a href="{{ url_for('gestion_incidencias') }}" class="incidencia-link">
+                <div class="lbl incidencia-box {{ 'alerta-roja-incidencia' if n_incidencias > 0 else '' }}">
+                    <h2 class="lbl1">Incidencias Fábrica</h2>
+                    <h1 class="lbl1">{{ n_incidencias }}</h1>
+                    <p class="lbl1">Click para gestionar</p>
+                </div>
+            </a>
+        </div>
+        <div class="rgt">
+            <div class="lbl">
+                <h2 class="lbl1">Pedidos pendientes</h2>
+                <h1 class="lbl1">{{ n_pedidos }}</h1>
+                <p class="lbl1">Vales sin procesar</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="btm">
+        <div class="btm1">
+            <h1 class="title" style="color: white; font-size: 1.2rem; margin-left: 10px;">Actividad Reciente</h1>
+            <div class="scroll-area">
+            {% if recientes %}
+                {% for vale in recientes %}
+                <div style="display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #444; align-items: center;">
+                    <span style="color: #ddd;"><strong>Vale:</strong> {{ vale['codigo_vale'] }}</span>
+                    <span class="estado-vale {{ 'recibido' if vale['Estado']|upper == 'RECIBIDO' else 'pendiente' }}">
+                        {{ vale['Estado'] or 'SIN ESTADO' }}
+                    </span>
+                    <span style="color: #aaa; font-size: 0.8rem;">{{ vale['Fecha'] }}</span>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div style="color: #747882; text-align: center; padding: 20px;">
+                    <p>No hay actividad registrada</p>
+                </div>
+            {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modalProducto" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000;">
+    <div class="modal-caja" style="background: #1a1d23; padding: 25px; border-radius: 10px; width: 450px; border: 1px solid #91da32;">
+        <div class="modal-header" style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+            <h3 style="color: #91da32; margin: 0;">Nuevo Producto</h3>
+            <span style="color: white; cursor: pointer; font-size: 24px;" onclick="cerrarModalProducto()">&times;</span>
+        </div>
+        <form action="/actualizar_producto" method="POST">
+            <div class="campo" style="margin-bottom: 15px;">
+                <label style="color: #aaa; display: block; margin-bottom: 5px;">ID / Código</label>
+                <input type="text" name="id" required style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #444; background: #252930; color: white;">
+            </div>
+            <div class="campo" style="margin-bottom: 15px;">
+                <label style="color: #aaa; display: block; margin-bottom: 5px;">Nombre</label>
+                <input type="text" name="nombre" required style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #444; background: #252930; color: white;">
+            </div>
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <div class="campo">
+                    <label style="color: #aaa; display: block; font-size: 0.8rem;">Stock Actual</label>
+                    <input type="number" name="stock_actual" value="0" style="width: 100%; padding: 8px; background: #252930; color: white; border: 1px solid #444;">
+                </div>
+                <div class="campo">
+                    <label style="color: #aaa; display: block; font-size: 0.8rem;">S. Mínimo</label>
+                    <input type="number" name="stock_minimo" value="5" style="width: 100%; padding: 8px; background: #252930; color: white; border: 1px solid #444;">
+                </div>
+                <div class="campo">
+                    <label style="color: #aaa; display: block; font-size: 0.8rem;">S. Máximo</label>
+                    <input type="number" name="stock_maximo" value="100" style="width: 100%; padding: 8px; background: #252930; color: white; border: 1px solid #444;">
+                </div>
+            </div>
+            <div class="campo" style="margin-bottom: 20px;">
+                <label style="color: #aaa; display: block; margin-bottom: 5px;">Proveedor</label>
+                <select name="id_proveedor" class="form-control" style="width: 100%; padding: 8px; background: #252930; color: white;">
+                    <option value="">-- Selecciona Proveedor --</option>
+                    {% for prov in proveedores %}
+                        <option value="{{ prov.id }}">{{ prov.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" style="width: 100%; padding: 12px; background: #91da32; border: none; color: #1a1d23; font-weight: bold; border-radius: 5px; cursor: pointer;">Guardar Producto</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function abrirModalProducto() {
+        document.getElementById('modalProducto').style.display = 'flex';
+    }
+    function cerrarModalProducto() {
+        document.getElementById('modalProducto').style.display = 'none';
+    }
+</script>
+{% endblock %}

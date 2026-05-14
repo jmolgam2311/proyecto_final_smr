@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/ogo.png') }}" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.png') }}" type="image/x-icon">
+    <title>Stock & Roll</title>
+    <style>
+        /* CSS UNIFICADO */
+        body {
+            display: flex;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #32353e;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+        }
+
+        .header_left {
+            height: 100vh;
+            width: 250px;
+            background-color: #1a1d23;
+            border-right: 1px solid #2d313a;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .cab {
+            display: flex;
+            align-items: center;
+            padding: 20px 15px;
+            background-color: #1a1d23;
+        }
+
+        .nombre {
+            color: #91da32; 
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-left: 10px;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            padding: 10px;
+        }
+
+        .dash1 {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .dash1:hover { background-color: #2d313a; }
+
+        .btn { color: #ffffff; font-size: 0.95rem; margin-left: 15px; }
+
+        .feed {
+            flex: 1;
+            background-color: #282c35;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .us {
+            margin-top: auto;
+            padding: 20px 15px;
+            border-top: 1px solid #2d313a;
+        }
+
+        .user { text-decoration: none; color: #ff4d4d; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="header_left">
+        <div class="cab">
+            <div class="nombre">Stock & Roll</div>
+        </div>
+        <nav class="menu">
+            <a href="/dashboard" class="dash1"><span class="btn">Dashboard</span></a>
+            <a href="/inventario" class="dash1"><span class="btn">Inventario</span></a>
+            <a href="/pedidos" class="dash1"><span class="btn">Pedidos/Ventas</span></a>
+            <a href="/proveedores" class="dash1"><span class="btn">Proveedores</span></a>
+            <a href="/analitica" class="dash1"><span class="btn">Analítica</span></a>
+            <div class="us">
+                <a href="/logout" class="user">Cerrar Sesión</a>
+            </div>
+        </nav>
+    </div>
+
+    <main class="feed">
+        {% block content %}{% endblock %}
+    </main>
+
+</body>
+</html>

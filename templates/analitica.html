@@ -1,0 +1,175 @@
+{% extends "test_layout.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Barcode+39&display=swap">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/analitica.css') }}">
+    <div class="feed">
+        <div class="modulo-analitica">
+            <div class="header-analitica">
+                <h2 class="title-seccion">Analítica de Rendimiento</h2>
+            </div>
+
+            <div class="row-kpis">
+                <div class="card-kpi {{ 'kpi-alerta' if porcentaje > 90 else 'kpi-normal' }}">
+                    <h3>Capacidad Almacén</h3>
+                    <div class="dato">{{ porcentaje }}%</div>
+                    <div class="progress-container"> 
+                        {% set valor_ancho = porcentaje | default(0) | round(1) %}
+                        <div class="progress-bar {{ 'bg-alerta' if valor_ancho > 90 else 'bg-seguro' }}" 
+                             style="--ancho: {{ valor_ancho }}%;">
+                        </div>
+                    </div>
+                    <div class="warning-text">{{ t_actual }} / {{ t_maximo }} Unidades</div>
+                </div>
+
+                <div class="card-kpi" style="border-left-color: #3b82f6;">
+                    <h3>Pedidos (Mes)</h3>
+                    <div class="dato">{{ pedidos_mes }}</div>
+                    <div class="subida" style="color: #3b82f6;">Actividad reciente</div>
+                </div>
+
+                <div class="card-kpi" style="border-left-color: #91da32;">
+                    <h3>Eficiencia Stock</h3>
+                    <div class="dato">85%</div>
+                    <div class="subida">Nivel: Óptimo</div>
+                    <div class="warning-text">Rotación calculada</div>
+                </div>
+            </div>
+
+            <div class="grid-analisis">
+                <div class="panel-grafica">
+                    <h4>Pedidos por Mes (Haz clic para detalle)</h4>
+                    <div class="grafico-mockup">
+                        {# --- LÓGICA DE ESCALA DINÁMICA --- #}
+                        {% set valores = [] %}
+                        {% for stat in stats_grafica %}
+                            {% set _ = valores.append(stat.cantidad) %}
+                        {% endfor %}
+                        {% set max_valor = valores|max if valores|length > 0 else 1 %}
+
+                        {% for stat in stats_grafica %}
+                            {# Calculamos el porcentaje relativo al valor más alto #}
+                            {% set h_final = (stat.cantidad / max_valor) * 100 %}
+
+                            <div class="barra" 
+                                 style="--h: {{ h_final }}%;" 
+                                 data-label="{{ stat.mes }}"
+                                 title="Total: {{ stat.cantidad }}"
+                                 onclick="abrirDetalle('{{ stat.mes }}')">
+                                 <span class="valor-barra" style="color: #91da32; font-size: 0.7rem; position: absolute; top: -15px; width: 100%; text-align: center;">
+                                    {{ stat.cantidad }}
+                                 </span>
+                            </div>
+                        {% else %}
+                            <p style="color: #747882; width: 100%; text-align: center;">No hay datos de pedidos</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 20px;">
+   <div class="contenedor-rankings-stack">
+    
+    <div class="panel-top">
+        <h4 class="titulo-top"><i class="fas fa-chart-line"></i> Top 3 Productos Más Vendidos</h4>
+        <div class="ranking-lista-vertical">
+            {% for item in ranking %}
+            <div class="ranking-item">
+                <span class="nombre-prod">{{ item['nombre'] }}</span>
+                <span class="separador-puntos"></span>
+                <strong class="badge-verde">{{ item['total_vendido'] }} uds</strong>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="panel-low">
+        <h4 class="titulo-muerto"><i class="fas fa-box-open"></i> Top 3 Stock Muerto (Baja Rotación)</h4>
+        <div class="ranking-lista-vertical">
+            {% for item in stock_muerto %}
+            <div class="ranking-item">
+                <span class="nombre-prod">{{ item['nombre'] }}</span>
+                <span class="separador-puntos"></span>
+                <strong class="badge-rojo">{{ item['total_vendido'] }} uds</strong>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalDetalle">
+        <div class="modal-content">
+            <button class="btn-cerrar" onclick="cerrarModal()">&times;</button>
+            <h3 id="modal-titulo">Detalle Diario</h3>
+            <table class="tabla-detalle">
+                <thead>
+                    <tr>
+                        <th>Día</th>
+                        <th>Pedidos</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+    // Función asíncrona para obtener datos reales del servidor
+    async function abrirDetalle(mes) {
+        const modal = document.getElementById('modalDetalle');
+        const titulo = document.getElementById('modal-titulo');
+        const tbody = document.getElementById('tabla-body');
+        
+        // 1. Mostrar modal y estado de carga
+        titulo.innerText = "Histórico de Pedidos: " + mes;
+        modal.style.display = "flex";
+        tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:#9ca3af;'>Consultando base de datos...</td></tr>";
+
+        try {
+            // 2. Petición a la API de Flask (asegúrate de crear esta ruta en app.py)
+            const response = await fetch(`/api/pedidos_mes/${mes}`);
+            const datos = await response.json();
+
+            // 3. Si no hay datos, informar al usuario
+            if (datos.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; padding:20px; color:#747882;'>No se registraron pedidos en " + mes + "</td></tr>";
+                return;
+            }
+
+            // 4. Construir las filas con datos reales
+            let html = "";
+            datos.forEach(pedido => {
+                html += `
+                    <tr>
+                        <td>${pedido.fecha}</td>
+                        <td>${pedido.codigo}</td>
+                        <td style="color:#91da32">Verificado</td>
+                    </tr>`;
+            });
+            tbody.innerHTML = html;
+
+        } catch (error) {
+            console.error("Error al obtener pedidos:", error);
+            tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:#ff4d4d;'>Error de conexión con el servidor</td></tr>";
+        }
+    }
+
+    // Función para cerrar el modal
+    function cerrarModal() {
+        document.getElementById('modalDetalle').style.display = "none";
+    }
+
+    // Cerrar al hacer clic fuera de la caja blanca/gris
+    window.onclick = function(event) {
+        const modal = document.getElementById('modalDetalle');
+        if (event.target == modal) {
+            cerrarModal();
+        }
+    }
+</script>
+</body>
+</html>
+{% endblock %}

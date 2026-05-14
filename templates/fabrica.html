@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Fábrica - Control de Movimientos</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fabrica.css') }}">
+</head>
+<body class="body-fabrica">
+    <div class="contenedor-fabrica">
+        <header class="header-operativo">
+            <div class="usuario-info">
+                <span>Operario: <strong>{{ session.get('usuario', 'Terminal 01') }}</strong></span>
+            </div>
+
+            <div class="selectores-modo">
+                <button class="btn-modo active" id="btn-entrada" onclick="cambiarModo('entrada')">ENTRADA Mercancía</button>
+                <button class="btn-modo" id="btn-salida" onclick="cambiarModo('salida')">SALIDA (Vale Interno)</button>
+            </div>
+
+            <div class="logout-container">
+                <a href="{{ url_for('logout') }}" class="btn-salir-operativo" title="Cerrar Sesión">
+                    <img src="{{ url_for('static', filename='img/logout.png') }}">
+                </a>
+            </div>
+        </header>
+
+        <section class="seccion-escaneo">
+            <div class="caja-input-barras">
+                <label for="lector-barras">Esperando escaneo de Vale...</label>
+                <input type="text" id="lector-barras" autofocus placeholder="Escanee el código del vale aquí..." 
+                       onkeydown="if(event.key==='Enter') procesarEscaneo(this.value)">
+            </div>
+        </section>
+
+        <section class="panel-verificacion" id="panel-datos" style="display:none;">
+            <div class="info-producto-escaneado">
+                <h2 id="codigo_vale">Vale: #------</h2>
+                <p id="vale-info-adicional">Cargando lista de materiales...</p>
+            </div>
+
+            <div class="check-lista" id="lista-productos-vale">
+                </div>
+            
+            <div class="contenedor-incidencias">
+                <button type="button" class="btn-toggle-incidencia" id="btn-alerta" onclick="toggleIncidencia()">
+                    ⚠️ Reportar Incidencia / Defecto
+                </button>
+
+                <div id="caja-incidencia" class="incidencia-desplegable" style="display: none;">
+                    <label>Describa el problema (ej: caja rota, falta material):</label>
+                    <textarea id="txt-incidencia" placeholder="Escriba aquí los detalles..."></textarea>
+    
+                    <div class="opciones-rapidas">
+                        <span onclick="ponerTexto('Embalaje dañado')">Embalaje dañado</span>
+                        <span onclick="ponerTexto('Material incompleto')">Incompleto</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="acciones-finales">
+                <button class="btn-cancelar-op" onclick="resetear()">Anular</button>
+                <button class="btn-validar" onclick="validarRegistro()">CONFIRMAR MOVIMIENTO</button>
+            </div>
+        </section>
+    </div>
+
+    <script>
+    let modoActual = 'entrada';
+
+    function cambiarModo(modo) {
+        modoActual = modo;
+        const btnE = document.getElementById('btn-entrada');
+        const btnS = document.getElementById('btn-salida');
+        const label = document.querySelector('.caja-input-barras label');
+        
+        if(modo === 'entrada') {
+            btnE.classList.add('active');
+            btnS.classList.remove('active');
+            label.innerText = "Esperando entrada de mercancía (Escanee Vale)...";
+        } else {
+            btnS.classList.add('active');
+            btnE.classList.remove('active');
+            label.innerText = "Generando Salida Interna (Escanee Vale)...";
+        }
+    }
+
+    function procesarEscaneo(codigo) {
+    if (!codigo) return;
+    const codigoLimpio = codigo.replace(/Vale:\s*/i, "").trim();
+
+    fetch(`/buscar_vale/${codigoLimpio}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('codigo_vale').innerText = "Vale: " + data.codigo;
+                document.getElementById('vale-info-adicional').innerText = "Productos asociados al pedido:";
+                
+                const contenedor = document.getElementById('lista-productos-vale');
+                contenedor.innerHTML = ''; 
+
+                data.productos.forEach(prod => {
+                    const fila = document.createElement('div');
+                    fila.className = 'fila-check';
+                    
+                    // CORRECCIÓN: Usamos prod.nombre (minúscula) y prod.id
+                    fila.innerHTML = `
+                        <div style="flex: 1; text-align: left;">
+                            <span style="display:block; font-weight:bold; color: white;">${prod.nombre}</span>
+                            <small style="color: #666;">ID: ${prod.id} | Esperado: ${prod.cantidad_pedida} uds</small>
+                        </div>
+                        <input type="number" class="input-confirmar" 
+                               data-id="${prod.id}" 
+                               value="${prod.cantidad_pedida}"
+                               placeholder="Cant.">
+                    `;
+                    contenedor.appendChild(fila);
+                });
+
+                document.getElementById('panel-datos').style.display = 'block';
+                document.getElementById('lector-barras').value = '';
+            } else {
+                alert("Error: " + data.message);
+                document.getElementById('lector-barras').value = '';
+            }
+        })
+        .catch(err => alert("Error de conexión con el servidor"));
+}
+
+    // FUNCIÓN ÚNICA Y CORREGIDA
+    function validarRegistro() {
+    const inputs = document.querySelectorAll('.input-confirmar');
+    let items = [];
+
+    // 1. Extraer el código del vale
+    let textoVale = document.getElementById('codigo_vale').innerText;
+    let codigoVale = textoVale.replace(/Vale:\s*/i, "").trim();
+
+    if (!codigoVale || codigoVale === "") {
+        alert("❌ Error: No se detecta el código del vale.");
+        return;
+    }
+
+    // 2. Extraer el texto de la incidencia (SI EXISTE)
+    let textoIncidencia = document.getElementById('txt-incidencia').value.trim();
+
+    inputs.forEach(input => {
+        items.push({
+            id_producto: input.getAttribute('data-id'), 
+            cantidad: parseInt(input.value)
+        });
+    });
+
+    const datos = {
+        codigo_vale: codigoVale,
+        modo: modoActual,
+        items: items,
+        incidencia: textoIncidencia // <--- AHORA ENVIAMOS EL TEXTO AL SERVIDOR
+    };
+
+    fetch('/confirmar_movimiento', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datos)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert("✅ ¡Stock actualizado!");
+            if (textoIncidencia !== "") {
+                alert("⚠️ Incidencia registrada correctamente.");
+            }
+            resetear();
+        } else {
+            alert("❌ Error al guardar: " + data.message);
+        }
+    })
+    .catch(err => alert("Error de comunicación con el servidor"));
+}
+
+    function resetear() {
+        document.getElementById('panel-datos').style.display = 'none';
+        document.getElementById('lista-productos-vale').innerHTML = '';
+        document.getElementById('lector-barras').value = '';
+        document.getElementById('lector-barras').focus();
+    }
+
+    function toggleIncidencia() {
+        const caja = document.getElementById('caja-incidencia');
+        const btn = document.getElementById('btn-alerta');
+        if (caja.style.display === 'none' || caja.style.display === '') {
+            caja.style.display = 'block';
+            btn.classList.add('activo');
+            btn.innerText = "❌ Cancelar Incidencia";
+        } else {
+            caja.style.display = 'none';
+            btn.classList.remove('activo');
+            btn.innerText = "⚠️ Reportar Incidencia / Defecto";
+            document.getElementById('txt-incidencia').value = '';
+        }
+    }
+
+    function ponerTexto(texto) {
+        document.getElementById('txt-incidencia').value = texto;
+    }
+</script>
+</body>
+</html>

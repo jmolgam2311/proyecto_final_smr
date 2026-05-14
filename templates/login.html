@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Stock&Roll - Acceso al Sistema</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body class="body-login">
+
+    <div class="login-card">
+        <div class="login-header">
+            <img class="logo-simbolo" src="{{ url_for('static', filename='img/logo.png') }}" height="60">
+            <h1>Stock&Roll</h1>
+            <p>Gestión de Inventario Inteligente</p>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="error-alert" style="color: #721c24; background: #f8d7da; padding: 10px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9em; border: 1px solid #f5c6cb;">
+              {{ messages[0] }}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <form action="/auth" method="POST" class="login-form">
+            <div class="input-group">
+                <label for="usuario">Usuario</label>
+                <input type="text" id="usuario" name="usuario" placeholder="Usuario" required>
+            </div>
+
+            <div class="input-group">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" name="password" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="btn-login">ENTRAR AL SISTEMA</button>
+        </form>
+
+        <div class="login-footer">
+            <p>Seleccione su terminal de acceso habitual</p>
+        </div>
+    </div>
+
+</body>
+</html>

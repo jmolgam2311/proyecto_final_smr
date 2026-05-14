@@ -1,0 +1,49 @@
+import sqlite3
+
+def inicializar_todo():
+    conexion = sqlite3.connect('inventario.db')
+    cursor = conexion.cursor()
+
+    # Tabla de Productos (Tu cabecera: ID, Nombre, Stock, Stock Min, Proveedor)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS productos (
+            id TEXT PRIMARY KEY,
+            nombre TEXT NOT NULL,
+            stock_actual INTEGER DEFAULT 0,
+            stock_minimo INTEGER DEFAULT 0,
+            id_proveedor TEXT
+        )
+    ''')
+
+    # Tabla de Vales de Pedido (Lo que genera Ventas)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS vales_pedido (
+            codigo_vale TEXT PRIMARY KEY, 
+            estado TEXT DEFAULT 'PENDIENTE'
+        )
+    ''')
+
+    # Detalle de los Vales (Qué productos vienen en cada vale)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS lineas_vale (
+            id_linea INTEGER PRIMARY KEY AUTOINCREMENT,
+            codigo_vale TEXT,
+            id_producto TEXT,
+            cantidad INTEGER,
+            FOREIGN KEY (codigo_vale) REFERENCES vales_pedido(codigo_vale),
+            FOREIGN KEY (id_producto) REFERENCES productos(id)
+        )
+    ''')
+
+    # --- DATOS DE PRUEBA PARA TU EXAMEN ---
+    # Insertamos un producto y un vale con el que puedas probar
+    cursor.execute("INSERT OR IGNORE INTO productos VALUES ('PROD01', 'Motor Industrial', 10, 2, 'Prov-A')")
+    cursor.execute("INSERT OR IGNORE INTO vales_pedido VALUES ('VALE-100', 'PENDIENTE')")
+    cursor.execute("INSERT OR IGNORE INTO lineas_vale (codigo_vale, id_producto, cantidad) VALUES ('VALE-100', 'PROD01', 5)")
+
+    conexion.commit()
+    conexion.close()
+    print("¡Base de datos e inventario inicial creados!")
+
+if __name__ == "__main__":
+    inicializar_todo()

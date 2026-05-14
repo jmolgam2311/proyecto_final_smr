@@ -1,0 +1,165 @@
+/* --- BASE DEL CONTENIDO --- */
+/* Solo definimos cómo se comporta el área donde va el contenido */
+body {
+    display: flex; /* Mantenemos flex para que respete el menú lateral que ya existe */
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #32353e;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    overflow: hidden;
+}
+
+/* --- CABECERA DE PÁGINA (Títulos y Botón Nuevo) --- */
+.header-pagina {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+h2 { 
+    color: white;
+    margin: 0;
+}
+
+/* --- TABLAS DE DATOS (Proveedores, Stock, etc.) --- */
+.card-tabla {
+    background-color: #282c37;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    width: 95%;
+}
+
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+}
+
+th {
+    background-color: #161a21; 
+    padding: 15px 20px;
+    color: #9ca3af;
+    text-align: left;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+td { 
+    padding: 15px 20px;
+    border-bottom: 1px solid #374151;
+    color: #e5e7eb;
+}
+
+/* --- BOTONES OPERATIVOS --- */
+.btn-nuevo { 
+    background: #a3e635; 
+    color: #1e222b; 
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s;
+    margin-right: 5%;
+}
+
+.btn-nuevo:hover {
+    transform: scale(1.05);
+}
+
+.btn-editar { 
+    background: none;
+    border: 1px solid #374151;
+    color: #a3e635; 
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-editar:hover {
+    background: #a3e635;
+    color: #1e222b;
+}
+
+/* --- MODAL (Altas y Ediciones) --- */
+.modal-overlay {
+    display: none; /* Se activa por JS */
+    position: fixed;
+    top: 0; left: 0; 
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-caja {
+    background: #282c37;
+    width: 450px;
+    border-radius: 12px;
+    border: 1px solid #374151;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+}
+
+.modal-header { 
+    padding: 20px;
+    border-bottom: 1px solid #374151;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+}
+
+.modal-body { 
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.campo { 
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.campo label {
+    color: #9ca3af;
+    font-size: 14px;
+}
+
+.campo input { 
+    background: #1e222b;
+    border: 1px solid #374151;
+    padding: 12px;
+    border-radius: 6px;
+    color: white;
+    outline: none;
+}
+
+.campo input:focus {
+    border-color: #a3e635;
+}
+
+.btn-guardar { 
+    background: #a3e635;
+    color: #1e222b;
+    border: none;
+    padding: 14px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.cerrar-modal { 
+    cursor: pointer;
+    color: #9ca3af;
+    font-size: 24px;
+}
